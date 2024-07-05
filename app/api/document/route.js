@@ -3,7 +3,6 @@ import { connectMongoDB } from "@/lib/mongodb";
 import DocumentModel from "@/models/Document";
 import { NextResponse } from "next/server";
 
-// Handler for GET requests to retrieve documents
 export async function GET(req) {
   try {
     await connectMongoDB();
@@ -17,13 +16,26 @@ export async function GET(req) {
   }
 }
 
-// Handler for POST requests to create a new document
 export async function POST(req) {
   try {
-    const data = await req.json();
+    const {
+      descriptionID,
+      descriptionEN,
+      articeDate,
+      category,
+      selectType,
+      createdAt,
+    } = await req.json();
     await connectMongoDB();
-    const newDocument = await DocumentModel.create(data);
-    return NextResponse.json(newDocument, { status: 201 });
+    await DocumentModel.create({
+      descriptionID,
+      descriptionEN,
+      articeDate,
+      category,
+      selectType,
+      createdAt,
+    });
+    return NextResponse.json({ message: "Document Added" }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { message: "An error occurred while creating the document." },

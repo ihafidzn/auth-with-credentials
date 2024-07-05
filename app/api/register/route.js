@@ -5,15 +5,31 @@ import bcrypt from "bcryptjs";
 
 export async function POST(req) {
   try {
-    const { name, email, password } = await req.json();
+    const { email, password } = await req.json();
     const hashedPassword = await bcrypt.hash(password, 10);
     await connectMongoDB();
-    await User.create({ name, email, password: hashedPassword });
+    await User.create({
+      email,
+      password: hashedPassword,
+    });
 
     return NextResponse.json({ message: "User registered." }, { status: 201 });
   } catch (error) {
     return NextResponse.json(
       { message: "An error occurred while registering the user." },
+      { status: 500 }
+    );
+  }
+}
+
+export async function GET(req) {
+  try {
+    await connectMongoDB();
+    const users = await User.find({});
+    return NextResponse.json(users, { status: 200 });
+  } catch (error) {
+    return NextResponse.json(
+      { message: "An error occurred while fetching documents." },
       { status: 500 }
     );
   }
