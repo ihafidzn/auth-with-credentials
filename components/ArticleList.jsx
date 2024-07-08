@@ -193,7 +193,7 @@ export default function ArticleList() {
   const handleDelete = async (articleId) => {
     try {
       if (!articleId) {
-        alert("Select a article to delete first.");
+        alert("Select an article to delete first.");
         return;
       }
       const confirmDelete = window.confirm(
@@ -202,10 +202,23 @@ export default function ArticleList() {
       if (!confirmDelete) {
         return;
       }
-      await axios.delete(`api/article/${articleId}`);
+
+      const deleteResponse = await fetch(`api/article/${articleId}`, {
+        method: "DELETE",
+      });
+
+      if (!deleteResponse.ok) {
+        throw new Error("Failed to delete the article");
+      }
+
       console.log("Article deleted successfully!");
-      const response = await axios.get("api/article");
-      setArticles(response.data);
+
+      const response = await fetch("api/article");
+      if (!response.ok) {
+        throw new Error("Failed to fetch articles");
+      }
+      const data = await response.json();
+      setArticles(data);
     } catch (error) {
       console.error("Error deleting article:", error);
       if (error.response && error.response.status === 500) {
@@ -434,7 +447,7 @@ export default function ArticleList() {
                     Description ID
                   </th>
                   <th className="border border-gray-300 px-4 py-2">Date</th>
-                  <th className="border border-gray-300 px-4 py-2">Actions</th>
+                  <th className="border border-gray-300 px-4 py-2">Delete</th>
                 </tr>
               </thead>
               <tbody>

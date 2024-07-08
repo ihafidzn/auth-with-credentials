@@ -4,6 +4,9 @@ import { NextResponse } from "next/server";
 
 export async function POST(req) {
   try {
+    const body = await req.json();
+    console.log("Received Payload:", body);
+
     const {
       titleID,
       titleEN,
@@ -14,7 +17,7 @@ export async function POST(req) {
       imageCover,
     } = await req.json();
     await connectMongoDB();
-    await ArticleModel.create({
+    const article = await ArticleModel.create({
       titleID,
       titleEN,
       descriptionID,
@@ -24,8 +27,12 @@ export async function POST(req) {
       imageCover,
     });
 
-    return NextResponse.json({ message: "Article created." }, { status: 201 });
+    return NextResponse.json(
+      { message: "Article created.", article },
+      { status: 201 }
+    );
   } catch (error) {
+    console.error("Error creating article:", error);
     return NextResponse.json(
       { message: "An error occurred while creating the article." },
       { status: 500 }
@@ -39,8 +46,12 @@ export async function GET(req) {
     const articles = await ArticleModel.find({});
     return NextResponse.json(articles, { status: 200 });
   } catch (error) {
+    console.error("Error fetching articles:", error.message);
     return NextResponse.json(
-      { message: "An error occurred while fetching articles." },
+      {
+        message: "An error occurred while fetching articles.",
+        error: error.message,
+      },
       { status: 500 }
     );
   }
@@ -48,7 +59,8 @@ export async function GET(req) {
 
 export async function DELETE(req) {
   try {
-    const { id } = await req.json();
+    const { searchParams } = new URL(req.url);
+    const id = searchParams.get("id");
     await connectMongoDB();
     const article = await ArticleModel.findByIdAndDelete(id);
 
