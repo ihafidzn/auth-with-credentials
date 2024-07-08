@@ -6,7 +6,6 @@ export async function POST(req) {
   try {
     const body = await req.json();
     console.log("Received Payload:", body);
-
     const {
       titleID,
       titleEN,
@@ -59,20 +58,27 @@ export async function GET(req) {
 
 export async function DELETE(req) {
   try {
-    const { searchParams } = new URL(req.url);
-    const id = searchParams.get("id");
-    await connectMongoDB();
-    const article = await ArticleModel.findByIdAndDelete(id);
+    const id = req.nextUrl.searchParams.get("id");
+    if (!id) {
+      return NextResponse.json(
+        { message: "ID is required to delete the article." },
+        { status: 400 }
+      );
+    }
 
-    if (!article) {
+    await connectMongoDB();
+    const result = await ArticleModel.findByIdAndDelete(id);
+
+    if (!result) {
       return NextResponse.json(
         { message: "Article not found." },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({ message: "Article deleted." }, { status: 200 });
+    return NextResponse.json({ message: "Article deleted" }, { status: 200 });
   } catch (error) {
+    console.error("Error deleting article:", error);
     return NextResponse.json(
       { message: "An error occurred while deleting the article." },
       { status: 500 }

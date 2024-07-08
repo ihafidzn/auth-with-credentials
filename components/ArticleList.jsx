@@ -10,6 +10,7 @@ import axios from "axios";
 import { useState, useEffect } from "react";
 import trash from "./assets/trash.svg";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import RemoveBtn from "./RemoveBtn";
 
 export default function ArticleList() {
   const [selectedFile, setSelectedFile] = useState();
@@ -109,50 +110,110 @@ export default function ArticleList() {
     setCategory(e.target.value);
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // const handleSubmit = (e) => {
+  //   e.preventDefault();
+  //   const currentDate = new Date();
+  //   const localCreatedAt = currentDate.toLocaleString("en-US", {
+  //     timeZone: "Asia/Jakarta",
+  //   });
+  //   console.log("Fetch Request Payload", {
+  //     titleID,
+  //     titleEN,
+  //     descriptionID,
+  //     descriptionEN,
+  //     articleDate,
+  //     category,
+  //     imageCover,
+  //   });
+
+  //   fetch("api/article", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //     },
+  //     body: JSON.stringify({
+  //       titleID,
+  //       titleEN,
+  //       descriptionID,
+  //       descriptionEN,
+  //       articleDate,
+  //       category,
+  //       createdAt: localCreatedAt,
+  //       imageCover,
+  //     }),
+  //   })
+  //     .then((response) => response.json())
+  //     .then((result) => {
+  //       console.log(result);
+
+  //       fetch("api/article")
+  //         .then((response) => response.json())
+  //         .then((data) => {
+  //           console.log(data);
+  //           setArticles(data);
+  //         })
+  //         .catch((err) => console.log(err));
+
+  //       setTitleID("");
+  //       setTitleEN("");
+  //       setDescriptionID("");
+  //       setDescriptionEN("");
+  //       setArticleDate("");
+  //       setCategory("");
+  //       setImageCover("");
+  //     })
+  //     .catch((error) => {
+  //       console.error("Server Error:", error.message);
+  //       if (error.status === 500) {
+  //         window.location.reload();
+  //       }
+  //     });
+  // };
+
+  const handleSubmit = async (e) => {
+    // const apiUrl = process.env.API_URL;
     const currentDate = new Date();
     const localCreatedAt = currentDate.toLocaleString("en-US", {
       timeZone: "Asia/Jakarta",
     });
-    console.log("Fetch Request Payload", {
-      titleID,
-      titleEN,
-      descriptionID,
-      descriptionEN,
-      articleDate,
-      category,
-      imageCover,
-    });
+    e.preventDefault();
 
-    fetch("api/article", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        titleID,
-        titleEN,
-        descriptionID,
-        descriptionEN,
-        articleDate,
-        category,
-        createdAt: localCreatedAt,
-        imageCover,
-      }),
-    })
-      .then((response) => response.json())
-      .then((result) => {
-        console.log(result);
+    if (
+      !titleID ||
+      !titleEN ||
+      !descriptionID ||
+      !descriptionEN ||
+      !articleDate ||
+      !category ||
+      !imageCover
+    ) {
+      alert("Harap Isi Semua Text");
+      return;
+    }
 
-        fetch("api/article")
-          .then((response) => response.json())
-          .then((data) => {
-            console.log(data);
-            setArticles(data);
-          })
-          .catch((err) => console.log(err));
+    try {
+      const res = await fetch("api/article", {
+        method: "POST",
+        headers: {
+          "Content-type": "application/json",
+        },
+        body: JSON.stringify({
+          titleID,
+          titleEN,
+          descriptionID,
+          descriptionEN,
+          articleDate,
+          category,
+          createdAt: localCreatedAt,
+          imageCover,
+        }),
+      });
 
+      if (res.ok) {
+        const result = await res.json();
+        console.log("Article created successfully:", result);
+        setArticles((prevArticles) => [...prevArticles, result.article]);
+        // Clear form fields after submission
         setTitleID("");
         setTitleEN("");
         setDescriptionID("");
@@ -160,13 +221,15 @@ export default function ArticleList() {
         setArticleDate("");
         setCategory("");
         setImageCover("");
-      })
-      .catch((error) => {
-        console.error("Server Error:", error.message);
-        if (error.status === 500) {
-          window.location.reload();
-        }
-      });
+        setSelectedFile(null);
+      } else {
+        const errorResult = await res.json();
+        throw new Error(errorResult.message);
+      }
+    } catch (error) {
+      console.error("Error creating article:", error);
+      alert("Failed to create article. Please try again.");
+    }
   };
 
   const handleDeleteImage = () => {
@@ -373,20 +436,20 @@ export default function ArticleList() {
                   <label className="w-full md:w-1/3 text-right md:text-right pr-4">
                     Category
                   </label>
-                  <div className="w-full md:w-2/3">
-                    <div className="form-check">
+                  <div className="w-full md:w-2/3 ">
+                    <div className="form-check ">
                       <input
                         className="form-check-input"
                         type="radio"
                         name="category"
                         id="category1"
-                        value="event"
-                        checked={category === "event"}
+                        value="public"
+                        checked={category === "public"}
                         onChange={handleRadioChange}
                         required
                       />
                       <label className="form-check-label" htmlFor="category1">
-                        Event
+                        PUBLIC
                       </label>
                     </div>
                     <div className="form-check">
@@ -395,28 +458,13 @@ export default function ArticleList() {
                         type="radio"
                         name="category"
                         id="category2"
-                        value="journal"
-                        checked={category === "journal"}
+                        value="internal"
+                        checked={category === "internal"}
                         onChange={handleRadioChange}
                         required
                       />
                       <label className="form-check-label" htmlFor="category2">
-                        Journal
-                      </label>
-                    </div>
-                    <div className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        name="category"
-                        id="category3"
-                        value="other"
-                        checked={category === "other"}
-                        onChange={handleRadioChange}
-                        required
-                      />
-                      <label className="form-check-label" htmlFor="category3">
-                        Other
+                        INTERNAL
                       </label>
                     </div>
                   </div>
@@ -463,16 +511,7 @@ export default function ArticleList() {
                       {article.articleDate}
                     </td>
                     <td className="border border-gray-300 px-4 py-2 text-center">
-                      <button
-                        onClick={() => handleDelete(article._id)}
-                        className="btn btn-danger"
-                      >
-                        <img
-                          src={trash}
-                          alt="Delete"
-                          className="h-6 w-6 object-contain"
-                        />
-                      </button>
+                      <RemoveBtn id={article._id} />
                     </td>
                   </tr>
                 ))}
