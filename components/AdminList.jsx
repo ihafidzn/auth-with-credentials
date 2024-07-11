@@ -9,6 +9,7 @@ import {
 import axios from "axios";
 import { useState, useEffect } from "react";
 import { Toast } from "react-toastify";
+import Navbar from "./Navbar";
 
 export default function AdminList() {
   const [users, setUsers] = useState([]);
@@ -54,6 +55,7 @@ export default function AdminList() {
   };
   return (
     <>
+      <Navbar />
       <section className="container mx-auto py-8">
         <div className="header-root">
           <h2 className="text-2xl font-bold">ADMIN CONTROL</h2>

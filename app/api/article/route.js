@@ -14,7 +14,7 @@ export async function POST(req) {
       articleDate,
       category,
       imageCover,
-    } = await req.json();
+    } = body;
     await connectMongoDB();
     const article = await ArticleModel.create({
       titleID,

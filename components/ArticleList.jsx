@@ -213,7 +213,7 @@ export default function ArticleList() {
         const result = await res.json();
         console.log("Article created successfully:", result);
         setArticles((prevArticles) => [...prevArticles, result.article]);
-        // Clear form fields after submission
+
         setTitleID("");
         setTitleEN("");
         setDescriptionID("");
@@ -228,7 +228,7 @@ export default function ArticleList() {
       }
     } catch (error) {
       console.error("Error creating article:", error);
-      alert("Failed to create article. Please try again.");
+      window.location.reload();
     }
   };
 
@@ -253,42 +253,42 @@ export default function ArticleList() {
   //     reader.readAsDataURL(e.target.files[0]);
   //   };
 
-  const handleDelete = async (articleId) => {
-    try {
-      if (!articleId) {
-        alert("Select an article to delete first.");
-        return;
-      }
-      const confirmDelete = window.confirm(
-        "Are you sure you want to delete this article?"
-      );
-      if (!confirmDelete) {
-        return;
-      }
+  // const handleDelete = async (articleId) => {
+  //   try {
+  //     if (!articleId) {
+  //       alert("Select an article to delete first.");
+  //       return;
+  //     }
+  //     const confirmDelete = window.confirm(
+  //       "Are you sure you want to delete this article?"
+  //     );
+  //     if (!confirmDelete) {
+  //       return;
+  //     }
 
-      const deleteResponse = await fetch(`api/article/${articleId}`, {
-        method: "DELETE",
-      });
+  //     const deleteResponse = await fetch(`api/article/${articleId}`, {
+  //       method: "DELETE",
+  //     });
 
-      if (!deleteResponse.ok) {
-        throw new Error("Failed to delete the article");
-      }
+  //     if (!deleteResponse.ok) {
+  //       throw new Error("Failed to delete the article");
+  //     }
 
-      console.log("Article deleted successfully!");
+  //     console.log("Article deleted successfully!");
 
-      const response = await fetch("api/article");
-      if (!response.ok) {
-        throw new Error("Failed to fetch articles");
-      }
-      const data = await response.json();
-      setArticles(data);
-    } catch (error) {
-      console.error("Error deleting article:", error);
-      if (error.response && error.response.status === 500) {
-        window.location.reload();
-      }
-    }
-  };
+  //     const response = await fetch("api/article");
+  //     if (!response.ok) {
+  //       throw new Error("Failed to fetch articles");
+  //     }
+  //     const data = await response.json();
+  //     setArticles(data);
+  //   } catch (error) {
+  //     console.error("Error deleting article:", error);
+  //     if (error.response && error.response.status === 500) {
+  //       window.location.reload();
+  //     }
+  //   }
+  // };
 
   return (
     <>
@@ -307,7 +307,7 @@ export default function ArticleList() {
                 <div className="flex flex-wrap mb-4">
                   <label
                     htmlFor="titleID"
-                    className="w-full md:w-1/3 text-right md:text-right pr-4"
+                    className="w-full md:w-1/3 text-left md:text-left pr-4"
                   >
                     Title ID
                   </label>
@@ -325,7 +325,7 @@ export default function ArticleList() {
                 <div className="flex flex-wrap mb-4">
                   <label
                     htmlFor="titleEN"
-                    className="w-full md:w-1/3 text-right md:text-right pr-4"
+                    className="w-full md:w-1/3 text-left md:text-left pr-4"
                   >
                     Title EN
                   </label>
@@ -343,13 +343,13 @@ export default function ArticleList() {
                 <div className="flex flex-wrap mb-4">
                   <label
                     htmlFor="descriptionID"
-                    className="w-full md:w-1/3 text-right md:text-right pr-4"
+                    className="w-full md:w-1/3 text-left md:text-left pr-4"
                   >
                     Description ID
                   </label>
                   <div className="w-full md:w-2/3">
                     <textarea
-                      className="form-control block w-full"
+                      className="form-control block w-full border"
                       id="descriptionID"
                       placeholder=""
                       rows="4"
@@ -361,13 +361,13 @@ export default function ArticleList() {
                 <div className="flex flex-wrap mb-4">
                   <label
                     htmlFor="descriptionEN"
-                    className="w-full md:w-1/3 text-right md:text-right pr-4"
+                    className="w-full md:w-1/3 text-left md:text-left pr-4"
                   >
                     Description EN
                   </label>
                   <div className="w-full md:w-2/3">
                     <textarea
-                      className="form-control block w-full"
+                      className="form-control block w-full border"
                       id="descriptionEN"
                       placeholder=""
                       rows="4"
@@ -379,7 +379,7 @@ export default function ArticleList() {
                 <div className="flex flex-wrap mb-4">
                   <label
                     htmlFor="articleDate"
-                    className="w-full md:w-1/3 text-right md:text-right pr-4"
+                    className="w-full md:w-1/3 text-left md:text-left pr-4"
                   >
                     Article Date
                   </label>
@@ -397,7 +397,7 @@ export default function ArticleList() {
                 <div className="flex flex-wrap mb-4">
                   <label
                     htmlFor="imageUpload"
-                    className="w-full md:w-1/3 text-right md:text-right pr-4"
+                    className="w-full md:w-1/3 text-left md:text-left pr-4"
                   >
                     Image Cover
                   </label>
@@ -433,10 +433,10 @@ export default function ArticleList() {
                   </div>
                 </div>
                 <div className="flex flex-wrap mb-4">
-                  <label className="w-full md:w-1/3 text-right md:text-right pr-4">
+                  <label className="w-full md:w-1/3 text-left md:text-left pr-4">
                     Category
                   </label>
-                  <div className="w-full md:w-2/3 ">
+                  <div className="w-full ">
                     <div className="form-check ">
                       <input
                         className="form-check-input"
@@ -469,11 +469,11 @@ export default function ArticleList() {
                     </div>
                   </div>
                 </div>
-                <div className="flex justify-end">
+                <div className="flex justify-center btn">
                   <button
                     type="submit"
-                    className="btn btn-primary"
-                    disabled={!selectedFile}
+                    className="btn bg-orange-500 py-2 px-4 rounded"
+                    // disabled={!selectedFile}
                   >
                     Submit
                   </button>
@@ -485,32 +485,55 @@ export default function ArticleList() {
         <div className="mt-6">
           <h2 className="text-2xl font-bold mb-4">Article List</h2>
           {articles.length === 0 ? (
-            <p>No articles found.</p>
+            <div className="flex justify-center items-center">
+              <svg
+                className="animate-spin h-5 w-5 mr-3 text-blue-500"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A8.001 8.001 0 0112 4.472v3.382l4.364 2.545-1.75 3.032-2.692-1.568V8.53l-.884-.515a6 6 0 10-1.702 6.688l.964.544-1.382 2.398L6 17.29v4.618z"
+                ></path>
+              </svg>
+              Loading...
+            </div>
           ) : (
-            <table className="table-auto w-full border-collapse border border-gray-400">
+            <table className="table-auto w-full ">
               <thead>
                 <tr>
-                  <th className="border border-gray-300 px-4 py-2">Title ID</th>
-                  <th className="border border-gray-300 px-4 py-2">
-                    Description ID
-                  </th>
-                  <th className="border border-gray-300 px-4 py-2">Date</th>
-                  <th className="border border-gray-300 px-4 py-2">Delete</th>
+                  <th className=" px-4 py-2">Title ID</th>
+                  <th className=" px-4 py-2">Description ID</th>
+                  <th className=" px-4 py-2">Date</th>
+                  <th className=" px-4 py-2">Delete</th>
                 </tr>
               </thead>
               <tbody>
                 {articles.map((article) => (
-                  <tr key={article._id}>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {article.titleID}
+                  <tr key={article._id} className="border-t">
+                    <td className=" px-4 py-2">{article.titleID}</td>
+                    <td className=" px-4 py-2">{article.descriptionID}</td>
+                    <td className=" px-4 py-2">{article.articleDate}</td>
+                    <td className=" px-4 py-2">
+                      {article.imageCover && (
+                        <img
+                          src={article.imageCover}
+                          alt="Article Cover"
+                          className="h-40 w-auto object-cover"
+                        />
+                      )}
                     </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {article.descriptionID}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2">
-                      {article.articleDate}
-                    </td>
-                    <td className="border border-gray-300 px-4 py-2 text-center">
+                    <td className=" px-4 py-2 text-center">
                       <RemoveBtn id={article._id} />
                     </td>
                   </tr>
